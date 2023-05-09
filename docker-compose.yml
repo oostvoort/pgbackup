@@ -1,0 +1,13 @@
+version: "3.9"
+
+services:
+  db:
+    image: postgres:15
+    env_file:
+      - .env
+  pgbackup:
+    build: "."
+    env_file:
+      - .env
+    depends_on:
+      - db

@@ -1,0 +1,44 @@
+captainVersion: 4
+services:
+  '$$cap_appname':
+    image: oostvoort/pgbackup:$$cap_version
+    environment:
+      POSTGRES_HOST: srv-captain--pgtest
+      POSTGRES_PORT: 5432
+      POSTGRES_DB: mydb
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      BACKUP_CRON: "0 0 * * *"
+      BACKUP_KEEP_DAYS: 7
+      BACKUP_KEEP_WEEKS: 4
+      BACKUP_KEEP_MONTHS: 6
+      BACKUP_ENCRYPTION_KEY: "insecure"
+      S3_HOST_BASE: sgp1.digitaloceanspaces.com
+      S3_HOST_BUCKET: "%(bucket)s.sgp1.digitaloceanspaces.com"
+      S3_BUCKET: postgres-backup
+      S3_DIR: test
+      S3_ACCESSKEY: insecure_key
+      S3_SECRET: insecure_secret
+      RESTORE_ONCE: ""
+      BACKUP_ONSTART: "1"
+    volumes:
+      - '$$cap_appname-data:/backups'
+    restart: no
+caproverOneClickApp:
+  variables:
+    - id: '$$cap_version'
+      label: pgbackup version
+      defaultValue: '15-latest'
+      description: 'Check out: https://hub.docker.com/repository/docker/oostvoort/pgbackup/tags'
+      validRegex: "/^([^\\s^\\/])+$/"
+  instructions:
+    start: |-
+      Backup PostgresSQL to the local filesystem with periodic rotating backups.
+      Backup multiple databases from the same host by setting the database names in `POSTGRES_DB` separated by commas or spaces.    
+      More details: https://hub.docker.com/repository/docker/oostvoort/pgbackup/general
+    end: |-
+      pgbackup has been successfully deployed!
+  displayName: pgbackup
+  isOfficial: true
+  description: "Backup PostgresSQL to local filesystem with periodic backups and rotate backups."
+  documentation: "See https://hub.docker.com/repository/docker/oostvoort/pgbackup"
